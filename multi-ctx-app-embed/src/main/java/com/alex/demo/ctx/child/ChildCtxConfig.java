@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.web.servlet.ErrorPage;
@@ -39,7 +40,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @Configuration
 @EnableWebMvc
 @ComponentScan("com.alex.demo.ctx.child")
-@Import({ PropertyPlaceholderAutoConfiguration.class, EmbeddedServletContainerAutoConfiguration.class,
+@Import({ PropertyPlaceholderAutoConfiguration.class, ServerPropertiesAutoConfiguration.class, EmbeddedServletContainerAutoConfiguration.class,
 		DispatcherServletAutoConfiguration.class })
 @PropertySource("classpath:context-child.properties")
 public class ChildCtxConfig {
@@ -102,8 +103,6 @@ public class ChildCtxConfig {
 		return new CompositeHandlerExceptionResolver();
 	}
 
-	// ---------------- START SERVER CONFIG
-
     /**
      * If we have parent web context - we can customize server this way.
      * 
@@ -115,22 +114,6 @@ public class ChildCtxConfig {
 		return new ServerCustomization();
 	}
 
-
-    /**
-     * If we don't have parent web context - we have to define {@link ServerProperties}.
-     * Even if we have parent web context we can do this way but {@link ServerCustomization} is more
-     * flexible.
-     * 
-     * @return
-     */
-    @Profile("!parent")
-    @Bean
-	public ServerProperties serverProperties() {
-		ServerProperties serverProperties = new ServerProperties();
-		serverProperties.setPort(8082);
-		return serverProperties;
-	}
-
 	/**
 	 * @see org.springframework.boot.actuate.autoconfigure.EndpointWebMvcChildContextConfiguration.ServerCustomization
 	 */
@@ -139,8 +122,6 @@ public class ChildCtxConfig {
 		@Autowired
 		private ListableBeanFactory beanFactory;
 
-		private ServerProperties server;
-
 		@Override
 		public int getOrder() {
 			return 0;
@@ -148,10 +129,10 @@ public class ChildCtxConfig {
 
 		@Override
 		public void customize(ConfigurableEmbeddedServletContainer container) {
-			this.server = BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory, ServerProperties.class);
+			ServerProperties server = BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory, ServerProperties.class);
 			// Customize as per the parent context first (so e.g. the access
 			// logs go to the same place)
-			this.server.customize(container);
+			server.customize(container);
 			// Then reset the error pages
 			container.setErrorPages(Collections.<ErrorPage> emptySet());
 			// and the context path
@@ -161,12 +142,11 @@ public class ChildCtxConfig {
 			// if (this.managementServerProperties.getSsl() != null) {
 			// container.setSsl(this.managementServerProperties.getSsl());
 			// }
-			container.setServerHeader(this.server.getServerHeader());
+			container.setServerHeader(server.getServerHeader());
 			// container.setAddress(this.managementServerProperties.getAddress());
-			container.addErrorPages(new ErrorPage(this.server.getError().getPath()));
+			container.addErrorPages(new ErrorPage(server.getError().getPath()));
 		}
 	}
-	// ---------------- END SERVER CONFIG
 
 	/**
 	 * @see org.springframework.boot.actuate.autoconfigure.EndpointWebMvcChildContextConfiguration.CompositeHandlerMapping
