@@ -2,7 +2,7 @@
 
 This sample application demonstrates creation of three contexts:
 
-1. Parent web context but without `DispatcherServlet`
+1. Parent web context [http://localhost:8080/](http://localhost:8080/)
 2. Child web context #1 on same port as parent [http://localhost:8080/first/](http://localhost:8080/first/)
 3. Child web context #2 on same port as parent [http://localhost:8080/second/](http://localhost:8080/second/)
 
@@ -23,6 +23,7 @@ public ServletRegistrationBean createChildFirstCtx() {
 
 Child contexts are exposed on same port as parent - 8080.
 
-Actuator is turned on in both child contexts. Example endpoints:
+Actuator is turned on in all contexts. Example endpoints:
+* [http://localhost:8080/beans](http://localhost:8080/beans)
 * [http://localhost:8080/first/beans](http://localhost:8080/first/beans)
 * [http://localhost:8080/second/beans](http://localhost:8080/second/beans)
