@@ -1,16 +1,17 @@
 package com.alex.demo.ctx.parent;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.alex.demo.ctx.child.first.ChildFirstCtxConfig;
 import com.alex.demo.ctx.child.second.ChildSecondCtxConfig;
 
-@SpringBootApplication(exclude = DispatcherServletAutoConfiguration.class)
+@SpringBootApplication
+@EnableWebMvc
 public class ParentCtxConfig {
 
     @Bean(name = "parent_bean")
