@@ -11,26 +11,40 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import com.alex.demo.ctx.parent.ParentCtxConfig;
 
+@ActiveProfiles("parent")
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { ParentCtxConfig.class }, webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
-public class ParentCtxControllerTests {
+public class MultiCtxWithParentProfileControllerTests {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testParent()
+    public void testChildWithParent()
             throws Exception {
 
-        Map<String, String> response = new RestTemplate().getForObject("http://localhost:8080/parent", Map.class);
+        Map<String, String> response = new RestTemplate().getForObject("http://localhost:8082/child", Map.class);
 
         assertEquals("parent_bean", response.get("parentBean"));
-        assertNull(response.get("childBean"));
+        assertEquals("child_bean", response.get("childBean"));
         assertEquals("common_prop", response.get("parentProperty"));
-        assertEquals("null", response.get("childProperty"));
+        assertEquals("prop_child", response.get("childProperty"));
+    }
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testParent() throws Exception {
+
+		Map<String, String> response = new RestTemplate().getForObject("http://localhost:8080/parent", Map.class);
+
+		assertEquals("parent_bean", response.get("parentBean"));
+		assertNull(response.get("childBean"));
+		assertEquals("common_prop", response.get("parentProperty"));
+		assertEquals("null", response.get("childProperty"));
 	}
 }
