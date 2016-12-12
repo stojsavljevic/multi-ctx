@@ -1,5 +1,6 @@
 package com.alex.demo.ctx;
 
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -17,8 +18,11 @@ import org.springframework.web.client.RestTemplate;
 import com.alex.demo.ctx.child.second.ChildSecondCtxConfig;
 import com.alex.demo.ctx.parent.ParentCtxConfig;
 
+
+
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { ParentCtxConfig.class, ChildSecondCtxConfig.class }, webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = { ParentCtxConfig.class,
+        ChildSecondCtxConfig.class }, webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class ChildSecondCtxControllerTests {
 

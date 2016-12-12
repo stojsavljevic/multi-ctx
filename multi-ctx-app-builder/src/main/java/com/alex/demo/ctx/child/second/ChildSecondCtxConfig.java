@@ -1,8 +1,11 @@
 package com.alex.demo.ctx.child.second;
 
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
+
+
 
 @SpringBootApplication
 @PropertySource("classpath:context-second.properties")

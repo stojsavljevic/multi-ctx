@@ -1,5 +1,6 @@
 package com.alex.demo.ctx.parent;
 
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import com.alex.demo.ctx.child.first.ChildFirstCtxConfig;
 import com.alex.demo.ctx.child.second.ChildSecondCtxConfig;
 
+
+
 @SpringBootApplication
 @EnableWebMvc
 public class ParentCtxConfig {
@@ -18,6 +21,7 @@ public class ParentCtxConfig {
     public String getParentBean() {
         return "parent_bean";
     }
+
 
     @Bean
     public ServletRegistrationBean createChildFirstCtx() {

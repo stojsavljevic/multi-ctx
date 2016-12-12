@@ -1,5 +1,6 @@
 package com.alex.demo.ctx.parent;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+
 
 @RestController
 public class ParentCtxController {
@@ -22,9 +25,11 @@ public class ParentCtxController {
 
     @Value("${common.property:null}")
     String parentProperty;
-    
+
     @Value("${custom.property.child:null}")
     String childProperty;
+
+
 
     // @formatter:off
 	@GetMapping("/parent")

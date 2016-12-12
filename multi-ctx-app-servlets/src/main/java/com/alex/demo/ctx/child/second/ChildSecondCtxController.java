@@ -1,5 +1,6 @@
 package com.alex.demo.ctx.child.second;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+
 
 @RestController
 public class ChildSecondCtxController {
@@ -32,6 +35,7 @@ public class ChildSecondCtxController {
 
     @Value("${custom.property.second}")
     String childSecondProperty;
+
 
 
     // @formatter:off
