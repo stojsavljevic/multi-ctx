@@ -2,7 +2,6 @@ package com.alex.demo.ctx.child;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -110,7 +109,7 @@ public class ChildCtxConfig {
 
 
     /**
-     * If we have parent web context - we can customize server this way.
+     * If we have parent web context - we <strong>CAN</strong> customize server this way.
      * 
      * @return
      */
@@ -146,12 +145,11 @@ public class ChildCtxConfig {
             // Customize as per the parent context first (so e.g. the access
             // logs go to the same place)
             server.customize(container);
-            // Then reset the error pages
-            container.setErrorPages(Collections.<ErrorPage> emptySet());
-            // and the context path
-            container.setContextPath("");
-            // and add the management-specific bits
-            container.setPort(8082);
+            // Then reset the error pages:
+            // container.setErrorPages(Collections.<ErrorPage> emptySet());
+            // and the other stuff:
+            // container.setContextPath("");
+            // container.setPort(8082);
             // if (this.managementServerProperties.getSsl() != null) {
             // container.setSsl(this.managementServerProperties.getSsl());
             // }
