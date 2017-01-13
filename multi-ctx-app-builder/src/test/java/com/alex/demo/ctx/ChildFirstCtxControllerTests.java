@@ -8,30 +8,41 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 import com.alex.demo.ctx.child.first.ChildFirstCtxConfig;
 import com.alex.demo.ctx.parent.ParentCtxConfig;
 
 
 
+/**
+ * In this scenario we can test contexts separately because we have two independent
+ * {@link SpringBootApplication}. We have to provide configuration class for parent context only
+ * because we need one bean from there.
+ *
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { ParentCtxConfig.class,
-        ChildFirstCtxConfig.class }, webEnvironment = WebEnvironment.DEFINED_PORT)
+        ChildFirstCtxConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class ChildFirstCtxControllerTests {
+
+    @Autowired
+    TestRestTemplate restTemplate;
 
     @SuppressWarnings("unchecked")
     @Test
     public void testChildFirst()
             throws Exception {
 
-        Map<String, String> response = new RestTemplate().getForObject("http://localhost:8080/first", Map.class);
+        Map<String, String> response = restTemplate.getForObject("/", Map.class);
 
         assertEquals("parent_bean", response.get("parentBean"));
         assertEquals("child_first_bean", response.get("childFirstBean"));

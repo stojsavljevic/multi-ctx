@@ -8,25 +8,30 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 import com.alex.demo.ctx.parent.ParentCtxConfig;
 
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { ParentCtxConfig.class }, webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = { ParentCtxConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MultiCtxControllerTests {
+
+    @Autowired
+    TestRestTemplate restTemplate;
+
 
     @SuppressWarnings("unchecked")
     @Test
     public void testParent()
             throws Exception {
 
-        Map<String, String> response = new RestTemplate().getForObject("http://localhost:8080/", Map.class);
+        Map<String, String> response = restTemplate.getForObject("/", Map.class);
 
         assertEquals("parent_bean", response.get("parentBean"));
         assertNull(response.get("childFirstBean"));
@@ -42,7 +47,7 @@ public class MultiCtxControllerTests {
     public void testChildFirst()
             throws Exception {
 
-        Map<String, String> response = new RestTemplate().getForObject("http://localhost:8080/first/", Map.class);
+        Map<String, String> response = restTemplate.getForObject("/first/", Map.class);
 
         assertEquals("parent_bean", response.get("parentBean"));
         assertEquals("child_first_bean", response.get("childFirstBean"));
@@ -58,7 +63,7 @@ public class MultiCtxControllerTests {
     public void testChildSecond()
             throws Exception {
 
-        Map<String, String> response = new RestTemplate().getForObject("http://localhost:8080/second/", Map.class);
+        Map<String, String> response = restTemplate.getForObject("/second/", Map.class);
 
         assertEquals("parent_bean", response.get("parentBean"));
         assertNull(response.get("childFirstBean"));
