@@ -21,7 +21,7 @@ import com.alex.demo.ctx.parent.ParentCtxConfig;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { ParentCtxConfig.class }, webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = ParentCtxConfig.class, webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class MultiCtxControllerTests {
 

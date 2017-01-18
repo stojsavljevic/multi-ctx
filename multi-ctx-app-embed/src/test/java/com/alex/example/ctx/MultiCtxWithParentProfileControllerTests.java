@@ -9,7 +9,6 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -24,7 +23,7 @@ import com.alex.demo.ctx.parent.ParentCtxConfig;
 
 @ActiveProfiles("parent")
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { ParentCtxConfig.class }, webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = ParentCtxConfig.class, webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class MultiCtxWithParentProfileControllerTests {
 
