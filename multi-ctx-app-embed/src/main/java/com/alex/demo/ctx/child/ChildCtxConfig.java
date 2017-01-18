@@ -10,17 +10,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
@@ -39,12 +41,12 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 /**
  * @see org.springframework.boot.actuate.autoconfigure.EndpointWebMvcChildContextConfiguration
  */
-@Configuration
+@SpringBootConfiguration
 @EnableWebMvc
 @ComponentScan("com.alex.demo.ctx.child")
 @Import({ PropertyPlaceholderAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
-        EmbeddedServletContainerAutoConfiguration.class,
-        DispatcherServletAutoConfiguration.class })
+        EmbeddedServletContainerAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+        WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
 @PropertySource("classpath:context-child.properties")
 public class ChildCtxConfig {
 
