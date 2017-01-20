@@ -1,4 +1,4 @@
-package com.alex.example.ctx;
+package com.alex.demo.ctx.parent;
 
 
 import static org.junit.Assert.assertEquals;
@@ -17,13 +17,11 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.alex.demo.ctx.parent.ParentCtxConfig;
-
 
 
 @ActiveProfiles("parent")
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ParentCtxConfig.class, webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class MultiCtxWithParentProfileControllerTests {
 

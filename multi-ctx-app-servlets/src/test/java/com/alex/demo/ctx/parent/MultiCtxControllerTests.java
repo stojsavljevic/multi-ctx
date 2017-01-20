@@ -1,4 +1,4 @@
-package com.alex.demo.ctx;
+package com.alex.demo.ctx.parent;
 
 
 import static org.junit.Assert.assertEquals;
@@ -14,12 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.alex.demo.ctx.parent.ParentCtxConfig;
-
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { ParentCtxConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MultiCtxControllerTests {
 
     @Autowired
