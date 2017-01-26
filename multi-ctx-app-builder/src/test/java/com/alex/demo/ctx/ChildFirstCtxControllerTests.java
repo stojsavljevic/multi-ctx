@@ -15,10 +15,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.alex.demo.ctx.child.first.ChildFirstCtxConfig;
-import com.alex.demo.ctx.parent.ParentCtxConfig;
 
 
 
@@ -29,10 +30,12 @@ import com.alex.demo.ctx.parent.ParentCtxConfig;
  *
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { ParentCtxConfig.class,
-        ChildFirstCtxConfig.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
+@ContextHierarchy(
+    @ContextConfiguration(name = "child", classes = ChildFirstCtxConfig.class)
+)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
-public class ChildFirstCtxControllerTests {
+public class ChildFirstCtxControllerTests extends ParentCtxDefinition {
 
     @Autowired
     TestRestTemplate restTemplate;
