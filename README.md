@@ -12,9 +12,10 @@ org.springframework.jmx.export.UnableToRegisterMBeanException: Unable to registe
 ```
 Still, module is running fine.
 
-Also, Actuator's _/beans_ endpoints in all modules are returning an empty array.
+Also, Actuator's _/beans_ endpoints in all modules are returning an empty array if application is run as _Spring Boot App_ or using _Boot Dashboard_.
+In case when app is run as _Java Application_ or from command line - it works as expected.
 
-Everything works as expected with `1.4.3.RELEASE`.
+Everything works fine with `1.4.3.RELEASE`.
 But `1.5` is required because of `@ContextHierarchy` support: https://github.com/spring-projects/spring-boot/issues/8000
 ******************
 
