@@ -3,20 +3,15 @@
 ******************
 **IMPORTANT NOTICE**
 
-After upgrading to Spring Boot `1.5.1.RELEASE` first module (`multi-ctx-app-builder`) is giving the error on startup:
+After upgrading to Spring Boot `1.5.1.RELEASE` I noticed two issues:
 
-```
-org.springframework.jmx.export.UnableToRegisterMBeanException: Unable to register MBean [org.springframework.boot.actuate.endpoint.jmx.AuditEventsJmxEndpoint@30d12fd8] with key 'auditEventsEndpoint'; nested exception is javax.management.InstanceAlreadyExistsException: org.springframework.boot:type=Endpoint,name=auditEventsEndpoint
-  at org.springframework.jmx.export.MBeanExporter.registerBeanNameOrInstance(MBeanExporter.java:628) ~[spring-context-4.3.6.RELEASE.jar:4.3.6.RELEASE]
-  ...
-```
-Still, module is running fine.
+1. `UnableToRegisterMBeanException` on startup of first module (`multi-ctx-app-builder`) . Still, module is running fine. [GitHub issue](https://github.com/spring-projects/spring-boot/issues/8152).
 
-Also, Actuator's _/beans_ endpoints in all modules are returning an empty array if application is run as _Spring Boot App_ or using _Boot Dashboard_.
-In case when app is run as _Java Application_ or from command line - it works as expected.
+2. Actuator's _/beans_ endpoints in all modules are returning an empty array if application is run from STS. [GitHub issue](https://github.com/spring-projects/spring-boot/issues/8146).
+
 
 Everything works fine with `1.4.3.RELEASE`.
-But `1.5` is required because of `@ContextHierarchy` support: https://github.com/spring-projects/spring-boot/issues/8000
+But `1.5` is required because of `@ContextHierarchy` [support](https://github.com/spring-projects/spring-boot/issues/8000)
 ******************
 
 This sample application(s) uses Spring Boot and handles multiple contexts inside one application. Samples handle contexts in different ways:
