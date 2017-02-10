@@ -1,6 +1,5 @@
 package com.alex.demo.ctx;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -21,37 +20,32 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.alex.demo.ctx.child.second.ChildSecondCtxConfig;
 
-
-
 /**
- * In this scenario we can test contexts separately because we have two independent
- * {@link SpringBootApplication}. We have to provide configuration class for parent context only
- * because we need one bean from there.
+ * In this scenario we can test contexts separately because we have two
+ * independent {@link SpringBootApplication}. We have to provide configuration
+ * class for parent context only because we need one bean from there.
  *
  */
 @RunWith(SpringRunner.class)
-@ContextHierarchy(
-    @ContextConfiguration(name = "child", classes = ChildSecondCtxConfig.class)
-)
+@ContextHierarchy(@ContextConfiguration(name = "child", classes = ChildSecondCtxConfig.class))
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class ChildSecondCtxControllerTests extends ParentCtxDefinition {
 
-    @Autowired
-    TestRestTemplate restTemplate;
+	@Autowired
+	TestRestTemplate restTemplate;
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testChildSecond()
-            throws Exception {
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testChildSecond() throws Exception {
 
-        Map<String, String> response = restTemplate.getForObject("/", Map.class);
+		Map<String, String> response = restTemplate.getForObject("/", Map.class);
 
-        assertEquals("parent_bean", response.get("parentBean"));
-        assertNull(response.get("childFirstBean"));
-        assertEquals("child_second_bean", response.get("childSecondBean"));
-        assertEquals("common_prop", response.get("parentProperty"));
-        assertEquals("null", response.get("childFirstProperty"));
-        assertEquals("prop_second", response.get("childSecondProperty"));
-    }
+		assertEquals("parent_bean", response.get("parentBean"));
+		assertNull(response.get("childFirstBean"));
+		assertEquals("child_second_bean", response.get("childSecondBean"));
+		assertEquals("common_prop", response.get("parentProperty"));
+		assertEquals("null", response.get("childFirstProperty"));
+		assertEquals("prop_second", response.get("childSecondProperty"));
+	}
 }

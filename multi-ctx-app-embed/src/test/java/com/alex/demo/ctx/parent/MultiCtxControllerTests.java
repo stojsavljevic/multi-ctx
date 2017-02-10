@@ -1,6 +1,5 @@
 package com.alex.demo.ctx.parent;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -16,40 +15,35 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringRunner;
 
-
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class MultiCtxControllerTests {
 
-    @Autowired
-    TestRestTemplate restTemplate;
+	@Autowired
+	TestRestTemplate restTemplate;
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testChild()
-            throws Exception {
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testChild() throws Exception {
 
-        Map<String, String> response = restTemplate.getForObject("http://localhost:8082/child", Map.class);
+		Map<String, String> response = restTemplate.getForObject("http://localhost:8082/child", Map.class);
 
-        assertNull(response.get("parentBean"));
-        assertEquals("child_bean", response.get("childBean"));
-        assertEquals("null", response.get("parentProperty"));
-        assertEquals("prop_child", response.get("childProperty"));
-    }
+		assertNull(response.get("parentBean"));
+		assertEquals("child_bean", response.get("childBean"));
+		assertEquals("null", response.get("parentProperty"));
+		assertEquals("prop_child", response.get("childProperty"));
+	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testParent() throws Exception {
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testParent()
-            throws Exception {
+		Map<String, String> response = restTemplate.getForObject("http://localhost:8080/parent", Map.class);
 
-        Map<String, String> response = restTemplate.getForObject("http://localhost:8080/parent", Map.class);
-
-        assertEquals("parent_bean", response.get("parentBean"));
-        assertNull(response.get("childBean"));
-        assertEquals("common_prop", response.get("parentProperty"));
-        assertEquals("null", response.get("childProperty"));
-    }
+		assertEquals("parent_bean", response.get("parentBean"));
+		assertNull(response.get("childBean"));
+		assertEquals("common_prop", response.get("parentProperty"));
+		assertEquals("null", response.get("childProperty"));
+	}
 }
