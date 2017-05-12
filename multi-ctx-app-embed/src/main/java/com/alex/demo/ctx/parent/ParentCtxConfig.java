@@ -11,7 +11,7 @@ import org.springframework.core.env.Environment;
 
 import com.alex.demo.ctx.child.ChildCtxConfig;
 
-@SpringBootApplication(scanBasePackages = { "com.alex.demo.ctx.parent" })
+@SpringBootApplication
 public class ParentCtxConfig {
 
 	@Autowired
