@@ -6,26 +6,19 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
@@ -41,8 +34,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @SpringBootConfiguration
 @EnableWebMvc
 @ComponentScan("com.alex.demo.ctx.child")
-@Import({ PropertyPlaceholderAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
-		EmbeddedServletContainerAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+@Import({ PropertyPlaceholderAutoConfiguration.class, /*ServerPropertiesAutoConfiguration.class,
+		EmbeddedServletContainerAutoConfiguration.class,*/ ServletWebServerFactoryAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 		WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
 @PropertySource("classpath:context-child.properties")
 public class ChildCtxConfig {
@@ -102,51 +95,54 @@ public class ChildCtxConfig {
 		return new CompositeHandlerExceptionResolver();
 	}
 
-	/**
-	 * If we have parent web context - we <strong>CAN</strong> customize server
-	 * this way.
-	 * 
-	 * @return
-	 */
-	@Profile("parent")
-	@Bean
-	public ServerCustomization serverCustomization() {
-		return new ServerCustomization();
-	}
-
-	/**
-	 * @see org.springframework.boot.actuate.autoconfigure.EndpointWebMvcChildContextConfiguration.ServerCustomization
-	 */
-	static class ServerCustomization implements EmbeddedServletContainerCustomizer, Ordered {
-
-		@Autowired
-		private ListableBeanFactory beanFactory;
-
-		@Override
-		public int getOrder() {
-			return 0;
-		}
-
-		@Override
-		public void customize(ConfigurableEmbeddedServletContainer container) {
-			ServerProperties server = BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory,
-					ServerProperties.class);
-			// Customize as per the parent context first (so e.g. the access
-			// logs go to the same place)
-			server.customize(container);
-			// Then reset the error pages:
-			// container.setErrorPages(Collections.<ErrorPage> emptySet());
-			// and the other stuff:
-			// container.setContextPath("");
-			// container.setPort(8082);
-			// if (this.managementServerProperties.getSsl() != null) {
-			// container.setSsl(this.managementServerProperties.getSsl());
-			// }
-			container.setServerHeader(server.getServerHeader());
-			// container.setAddress(this.managementServerProperties.getAddress());
-			container.addErrorPages(new ErrorPage(server.getError().getPath()));
-		}
-	}
+//	/**
+//	 * If we have parent web context - we <strong>CAN</strong> customize server
+//	 * this way.
+//	 * 
+//	 * @return
+//	 */
+//	@Profile("parent")
+//	@Bean
+//	public ServerCustomization serverCustomization() {
+//		return new ServerCustomization();
+//	}
+//
+//	/**
+//	 * @see org.springframework.boot.actuate.autoconfigure.EndpointWebMvcChildContextConfiguration.ServerCustomization
+//	 */
+//	static class ServerCustomization implements WebServerFactoryCustomizer<TomcatServletWebServerFactory>, Ordered {
+//
+//		@Autowired
+//		private ListableBeanFactory beanFactory;
+//
+//		@Override
+//		public int getOrder() {
+//			return 0;
+//		}
+//
+//		@Override
+//		public void customize(TomcatServletWebServerFactory container) {
+//			ServerProperties server = BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory,
+//					ServerProperties.class);
+//			// Customize as per the parent context first (so e.g. the access
+//			// logs go to the same place)
+//			
+//			// TODO fix this ...
+////			server.customize(container);
+//			
+//			// Then reset the error pages:
+//			// container.setErrorPages(Collections.<ErrorPage> emptySet());
+//			// and the other stuff:
+//			// container.setContextPath("");
+//			// container.setPort(8082);
+//			// if (this.managementServerProperties.getSsl() != null) {
+//			// container.setSsl(this.managementServerProperties.getSsl());
+//			// }
+//			container.setServerHeader(server.getServerHeader());
+//			// container.setAddress(this.managementServerProperties.getAddress());
+//			container.addErrorPages(new ErrorPage(server.getError().getPath()));
+//		}
+//	}
 
 	/**
 	 * @see org.springframework.boot.actuate.autoconfigure.EndpointWebMvcChildContextConfiguration.CompositeHandlerMapping

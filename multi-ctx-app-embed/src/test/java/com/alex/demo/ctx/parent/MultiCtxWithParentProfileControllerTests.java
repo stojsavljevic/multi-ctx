@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -57,8 +57,8 @@ public class MultiCtxWithParentProfileControllerTests {
 
 	int getChildPort() {
 
-		AnnotationConfigEmbeddedWebApplicationContext childContext = applicationContext
-				.getBean(AnnotationConfigEmbeddedWebApplicationContext.class);
-		return childContext.getEmbeddedServletContainer().getPort();
+		AnnotationConfigServletWebServerApplicationContext childContext = applicationContext
+				.getBean(AnnotationConfigServletWebServerApplicationContext.class);
+		return childContext.getWebServer().getPort();
 	}
 }
