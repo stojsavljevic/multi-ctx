@@ -4,7 +4,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
@@ -28,8 +28,8 @@ public class ParentCtxConfig {
 	 * @return
 	 */
 	@Bean
-	public AnnotationConfigEmbeddedWebApplicationContext createChildContext(ApplicationContext parentContext) {
-		AnnotationConfigEmbeddedWebApplicationContext childContext = new AnnotationConfigEmbeddedWebApplicationContext();
+	public AnnotationConfigServletWebServerApplicationContext createChildContext(ApplicationContext parentContext) {
+		AnnotationConfigServletWebServerApplicationContext childContext = new AnnotationConfigServletWebServerApplicationContext();
 
 		// DO WE WANT PARENT CONTEXT!?
 		if (hasProfile("parent")) {
