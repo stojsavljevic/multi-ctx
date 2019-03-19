@@ -17,5 +17,5 @@ public static void main(String[] args) {
 Child contexts are exposed on different ports - 8080 and 8081 respectively.
 
 Actuator is turned on in both web contexts. Example endpoints:
-* [http://localhost:8080/first/beans](http://localhost:8080/first/beans)
-* [http://localhost:8081/second/beans](http://localhost:8081/second/beans)
+* [http://localhost:8080/first/actuator/beans](http://localhost:8080/first/actuator/beans)
+* [http://localhost:8081/second/actuator/beans](http://localhost:8081/second/actuator/beans)

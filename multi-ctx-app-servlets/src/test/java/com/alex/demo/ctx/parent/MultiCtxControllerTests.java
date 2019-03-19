@@ -1,6 +1,7 @@
 package com.alex.demo.ctx.parent;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Map;
@@ -33,6 +34,25 @@ public class MultiCtxControllerTests {
 		assertEquals("null", response.get("childFirstProperty"));
 		assertEquals("null", response.get("childSecondProperty"));
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testParentNotExists() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("/dummy", Map.class);
+
+		assertEquals("Not Found", response.get("error"));
+		assertEquals("No message available", response.get("message"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testParentActuator() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("/actuator/beans", Map.class);
+
+		assertNotNull(response.get("contexts"));
+	}
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -47,6 +67,25 @@ public class MultiCtxControllerTests {
 		assertEquals("prop_first", response.get("childFirstProperty"));
 		assertEquals("null", response.get("childSecondProperty"));
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testChildFirstNotExists() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("/first/dummy", Map.class);
+
+		assertEquals("Not Found", response.get("error"));
+		assertEquals("No message available", response.get("message"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testChildFirstActuator() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("/first/actuator/beans", Map.class);
+
+		assertNotNull(response.get("contexts"));
+	}
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -60,5 +99,24 @@ public class MultiCtxControllerTests {
 		assertEquals("common_prop", response.get("parentProperty"));
 		assertEquals("null", response.get("childFirstProperty"));
 		assertEquals("prop_second", response.get("childSecondProperty"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testChildSecondNotExists() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("/second/dummy", Map.class);
+
+		assertEquals("Not Found", response.get("error"));
+		assertEquals("No message available", response.get("message"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testChildSecondActuator() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("/second/actuator/beans", Map.class);
+
+		assertNotNull(response.get("contexts"));
 	}
 }

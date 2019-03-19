@@ -1,6 +1,7 @@
 package com.alex.demo.ctx;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Map;
@@ -47,5 +48,24 @@ public class ChildSecondCtxControllerTests extends ParentCtxDefinition {
 		assertEquals("common_prop", response.get("parentProperty"));
 		assertEquals("null", response.get("childFirstProperty"));
 		assertEquals("prop_second", response.get("childSecondProperty"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testChildSecondNotExists() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("/dummy", Map.class);
+
+		assertEquals("Not Found", response.get("error"));
+		assertEquals("No message available", response.get("message"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testChildSecondActuator() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("/actuator/beans", Map.class);
+
+		assertNotNull(response.get("contexts"));
 	}
 }

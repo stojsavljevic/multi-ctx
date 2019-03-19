@@ -2,41 +2,58 @@ package com.alex.demo.ctx.child;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.servlet.ManagementErrorEndpoint;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletRegistrationBean;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextListener;
+import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
- * @see org.springframework.boot.actuate.autoconfigure.EndpointWebMvcChildContextConfiguration
+ * @see org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration
  */
 @SpringBootConfiguration
 @EnableWebMvc
 @ComponentScan("com.alex.demo.ctx.child")
-@Import({ PropertyPlaceholderAutoConfiguration.class, /*ServerPropertiesAutoConfiguration.class,
-		EmbeddedServletContainerAutoConfiguration.class,*/ ServletWebServerFactoryAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-		WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
+@Import({ PropertyPlaceholderAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
+		DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class })
 @PropertySource("classpath:context-child.properties")
 public class ChildCtxConfig {
 
@@ -44,12 +61,22 @@ public class ChildCtxConfig {
 	public String getChildBean() {
 		return "child_bean";
 	}
+	
+	@Value("${server.port:8888}")
+	int parentProperty;
 
-	/**
-	 * If we have parent web context - we need this bean.
-	 * 
-	 * @return
-	 */
+	@Bean
+	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
+	public DefaultErrorAttributes errorAttributes() {
+		return new DefaultErrorAttributes();
+	}
+
+	@Bean
+	@ConditionalOnBean(ErrorAttributes.class)
+	public ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes) {
+		return new ManagementErrorEndpoint(errorAttributes);
+	}
+
 	@Profile("parent")
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 	public DispatcherServlet dispatcherServlet() {
@@ -62,92 +89,52 @@ public class ChildCtxConfig {
 		return dispatcherServlet;
 	}
 
-	/**
-	 * If we have parent web context - we need this bean.
-	 * 
-	 * @return
-	 */
+	@Profile("parent")
+	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
+	public DispatcherServletRegistrationBean dispatcherServletRegistrationBean(DispatcherServlet dispatcherServlet) {
+		return new DispatcherServletRegistrationBean(dispatcherServlet, "/");
+	}
+
 	@Profile("parent")
 	@Bean(name = DispatcherServlet.HANDLER_MAPPING_BEAN_NAME)
 	public CompositeHandlerMapping compositeHandlerMapping() {
 		return new CompositeHandlerMapping();
 	}
 
-	/**
-	 * If we have parent web context - we need this bean.
-	 * 
-	 * @return
-	 */
 	@Profile("parent")
 	@Bean(name = DispatcherServlet.HANDLER_ADAPTER_BEAN_NAME)
-	public CompositeHandlerAdapter compositeHandlerAdapter() {
-		return new CompositeHandlerAdapter();
+	public CompositeHandlerAdapter compositeHandlerAdapter(ListableBeanFactory beanFactory) {
+		return new CompositeHandlerAdapter(beanFactory);
 	}
 
-	/**
-	 * If we have parent web context - we need this bean.
-	 * 
-	 * @return
-	 */
 	@Profile("parent")
-	@Bean(name = DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
-	public CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
-		return new CompositeHandlerExceptionResolver();
+	@Bean
+	@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
+	public RequestContextFilter requestContextFilter() {
+		return new OrderedRequestContextFilter();
 	}
 
-//	/**
-//	 * If we have parent web context - we <strong>CAN</strong> customize server
-//	 * this way.
-//	 * 
-//	 * @return
-//	 */
-//	@Profile("parent")
-//	@Bean
-//	public ServerCustomization serverCustomization() {
-//		return new ServerCustomization();
-//	}
-//
-//	/**
-//	 * @see org.springframework.boot.actuate.autoconfigure.EndpointWebMvcChildContextConfiguration.ServerCustomization
-//	 */
-//	static class ServerCustomization implements WebServerFactoryCustomizer<TomcatServletWebServerFactory>, Ordered {
-//
-//		@Autowired
-//		private ListableBeanFactory beanFactory;
-//
-//		@Override
-//		public int getOrder() {
-//			return 0;
-//		}
-//
-//		@Override
-//		public void customize(TomcatServletWebServerFactory container) {
-//			ServerProperties server = BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory,
-//					ServerProperties.class);
-//			// Customize as per the parent context first (so e.g. the access
-//			// logs go to the same place)
-//			
-//			// TODO fix this ...
-////			server.customize(container);
-//			
-//			// Then reset the error pages:
-//			// container.setErrorPages(Collections.<ErrorPage> emptySet());
-//			// and the other stuff:
-//			// container.setContextPath("");
-//			// container.setPort(8082);
-//			// if (this.managementServerProperties.getSsl() != null) {
-//			// container.setSsl(this.managementServerProperties.getSsl());
-//			// }
-//			container.setServerHeader(server.getServerHeader());
-//			// container.setAddress(this.managementServerProperties.getAddress());
-//			container.addErrorPages(new ErrorPage(server.getError().getPath()));
-//		}
-//	}
+	@Component
+	public class MyTomcatWebServerCustomizer implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+
+		@Autowired
+		private ListableBeanFactory beanFactory;
+
+		@Override
+		public void customize(TomcatServletWebServerFactory factory) {
+			ServerProperties server = BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory,
+					ServerProperties.class);
+
+			factory.setPort(parentProperty);
+			factory.addErrorPages(new ErrorPage(server.getError().getPath()));
+			factory.setServerHeader(server.getServerHeader());
+		}
+	}
 
 	/**
-	 * @see org.springframework.boot.actuate.autoconfigure.EndpointWebMvcChildContextConfiguration.CompositeHandlerMapping
+	 * @see org.springframework.boot.actuate.autoconfigure.web.servlet.CompositeHandlerMapping
 	 */
-	static class CompositeHandlerMapping implements HandlerMapping {
+	class CompositeHandlerMapping implements HandlerMapping {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -175,18 +162,51 @@ public class ChildCtxConfig {
 			AnnotationAwareOrderComparator.sort(list);
 			return list;
 		}
-
 	}
 
 	/**
-	 * @see org.springframework.boot.actuate.autoconfigure.EndpointWebMvcChildContextConfiguration.CompositeHandlerAdapter
+	 * @see org.springframework.boot.actuate.autoconfigure.web.servlet.CompositeHandlerAdapter
 	 */
-	static class CompositeHandlerAdapter implements HandlerAdapter {
+	class CompositeHandlerAdapter implements HandlerAdapter {
 
-		@Autowired
-		private ListableBeanFactory beanFactory;
+		private final ListableBeanFactory beanFactory;
 
 		private List<HandlerAdapter> adapters;
+
+		CompositeHandlerAdapter(ListableBeanFactory beanFactory) {
+			this.beanFactory = beanFactory;
+		}
+
+		@Override
+		public boolean supports(Object handler) {
+			return getAdapter(handler).isPresent();
+		}
+
+		@Override
+		public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+				throws Exception {
+			Optional<HandlerAdapter> adapter = getAdapter(handler);
+			if (adapter.isPresent()) {
+				return adapter.get().handle(request, response, handler);
+			}
+			return null;
+		}
+
+		@Override
+		public long getLastModified(HttpServletRequest request, Object handler) {
+			Optional<HandlerAdapter> adapter = getAdapter(handler);
+			if (adapter.isPresent()) {
+				return adapter.get().getLastModified(request, handler);
+			}
+			return 0;
+		}
+
+		private Optional<HandlerAdapter> getAdapter(Object handler) {
+			if (this.adapters == null) {
+				this.adapters = extractAdapters();
+			}
+			return this.adapters.stream().filter((a) -> a.supports(handler)).findFirst();
+		}
 
 		private List<HandlerAdapter> extractAdapters() {
 			List<HandlerAdapter> list = new ArrayList<>();
@@ -194,81 +214,6 @@ public class ChildCtxConfig {
 			list.remove(this);
 			AnnotationAwareOrderComparator.sort(list);
 			return list;
-		}
-
-		@Override
-		public boolean supports(Object handler) {
-			if (this.adapters == null) {
-				this.adapters = extractAdapters();
-			}
-			for (HandlerAdapter mapping : this.adapters) {
-				if (mapping.supports(handler)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		@Override
-		public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
-				throws Exception {
-			if (this.adapters == null) {
-				this.adapters = extractAdapters();
-			}
-			for (HandlerAdapter mapping : this.adapters) {
-				if (mapping.supports(handler)) {
-					return mapping.handle(request, response, handler);
-				}
-			}
-			return null;
-		}
-
-		@Override
-		public long getLastModified(HttpServletRequest request, Object handler) {
-			if (this.adapters == null) {
-				this.adapters = extractAdapters();
-			}
-			for (HandlerAdapter mapping : this.adapters) {
-				if (mapping.supports(handler)) {
-					return mapping.getLastModified(request, handler);
-				}
-			}
-			return 0;
-		}
-
-	}
-
-	/**
-	 * @see org.springframework.boot.actuate.autoconfigure.EndpointWebMvcChildContextConfiguration.CompositeHandlerExceptionResolver
-	 */
-	static class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
-
-		@Autowired
-		private ListableBeanFactory beanFactory;
-
-		private List<HandlerExceptionResolver> resolvers;
-
-		private List<HandlerExceptionResolver> extractResolvers() {
-			List<HandlerExceptionResolver> list = new ArrayList<>();
-			list.addAll(this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
-			list.remove(this);
-			AnnotationAwareOrderComparator.sort(list);
-			return list;
-		}
-
-		@Override
-		public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
-				Exception ex) {
-			if (this.resolvers == null) {
-				this.resolvers = extractResolvers();
-			}
-			for (HandlerExceptionResolver mapping : this.resolvers) {
-				ModelAndView mav = mapping.resolveException(request, response, handler, ex);
-				if (mav != null) {
-					return mav;
-				}
-			}
-			return null;
 		}
 	}
 }

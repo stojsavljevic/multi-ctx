@@ -4,13 +4,13 @@ This sample application demonstrates creation of three contexts:
 
 1. Parent web context [http://localhost:8080/parent](http://localhost:8080/parent)
 2. Child web context on separate port [http://localhost:8082/child](http://localhost:8082/child)
-3. Actuator (child) context on separate port [http://localhost:8081/beans](http://localhost:8081/beans)
+3. Actuator (child) context on separate port [http://localhost:8081/actuator/beans](http://localhost:8081/actuator/beans)
 
-Child context is type `org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext` and it is created using Java configuration:
+Child context is type `org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext` and it is created using Java configuration:
 ```
 @Bean
-public AnnotationConfigEmbeddedWebApplicationContext createChildContext(ApplicationContext parentContext) {
-  AnnotationConfigEmbeddedWebApplicationContext childContext = new AnnotationConfigEmbeddedWebApplicationContext();
+public AnnotationConfigServletWebServerApplicationContext createChildContext(ApplicationContext parentContext) {
+  AnnotationConfigServletWebServerApplicationContext childContext = new AnnotationConfigServletWebServerApplicationContext();
   ...
   return childContext;
 }

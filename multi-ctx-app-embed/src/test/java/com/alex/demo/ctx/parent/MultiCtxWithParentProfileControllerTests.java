@@ -1,6 +1,7 @@
 package com.alex.demo.ctx.parent;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Map;
@@ -20,7 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @ActiveProfiles("parent")
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class MultiCtxWithParentProfileControllerTests {
 
@@ -45,6 +46,17 @@ public class MultiCtxWithParentProfileControllerTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void testChildNotExists() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("http://localhost:{port}/child/dummy", Map.class,
+				getChildPort());
+
+		assertEquals("Not Found", response.get("error"));
+		assertEquals("No message available", response.get("message"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
 	public void testParent() throws Exception {
 
 		Map<String, String> response = restTemplate.getForObject("/parent", Map.class);
@@ -53,6 +65,25 @@ public class MultiCtxWithParentProfileControllerTests {
 		assertNull(response.get("childBean"));
 		assertEquals("common_prop", response.get("parentProperty"));
 		assertEquals("null", response.get("childProperty"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testParentNotExists() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("/parent/dummy", Map.class);
+
+		assertEquals("Not Found", response.get("error"));
+		assertEquals("No message available", response.get("message"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testActuator() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("http://localhost:8081/actuator/beans", Map.class);
+
+		assertNotNull(response.get("contexts"));
 	}
 
 	int getChildPort() {

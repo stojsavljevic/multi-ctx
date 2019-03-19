@@ -24,6 +24,6 @@ public ServletRegistrationBean createChildFirstCtx() {
 Child contexts are exposed on same port as parent - 8080.
 
 Actuator is turned on in all contexts. Example endpoints:
-* [http://localhost:8080/beans](http://localhost:8080/beans)
-* [http://localhost:8080/first/beans](http://localhost:8080/first/beans)
-* [http://localhost:8080/second/beans](http://localhost:8080/second/beans)
+* [http://localhost:8080/actuator/beans](http://localhost:8080/actuator/beans)
+* [http://localhost:8080/first/actuator/beans](http://localhost:8080/first/actuator/beans)
+* [http://localhost:8080/second/actuator/beans](http://localhost:8080/second/actuator/beans)

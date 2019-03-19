@@ -1,6 +1,7 @@
 package com.alex.demo.ctx.parent;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Map;
@@ -34,7 +35,17 @@ public class MultiCtxControllerTests {
 		assertEquals("null", response.get("parentProperty"));
 		assertEquals("prop_child", response.get("childProperty"));
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testChildNotExists() throws Exception {
 
+		Map<String, String> response = restTemplate.getForObject("http://localhost:8082/child/dummy", Map.class);
+
+		assertEquals("Not Found", response.get("error"));
+		assertEquals("No message available", response.get("message"));
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testParent() throws Exception {
@@ -45,5 +56,24 @@ public class MultiCtxControllerTests {
 		assertNull(response.get("childBean"));
 		assertEquals("common_prop", response.get("parentProperty"));
 		assertEquals("null", response.get("childProperty"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testParentNotExists() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("http://localhost:8080/parent/dummy", Map.class);
+
+		assertEquals("Not Found", response.get("error"));
+		assertEquals("No message available", response.get("message"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testActuator() throws Exception {
+
+		Map<String, String> response = restTemplate.getForObject("http://localhost:8081/actuator/beans", Map.class);
+
+		assertNotNull(response.get("contexts"));
 	}
 }

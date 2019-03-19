@@ -23,7 +23,7 @@ public class ParentCtxConfig {
 	}
 
 	/**
-	 * @see org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration#createChildManagementContext()
+	 * @see org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextFactory#createManagementContext()
 	 * @param parentContext
 	 * @return
 	 */
@@ -31,19 +31,12 @@ public class ParentCtxConfig {
 	public AnnotationConfigServletWebServerApplicationContext createChildContext(ApplicationContext parentContext) {
 		AnnotationConfigServletWebServerApplicationContext childContext = new AnnotationConfigServletWebServerApplicationContext();
 
-		// DO WE WANT PARENT CONTEXT!?
 		if (hasProfile("parent")) {
 			childContext.setParent(parentContext);
 		}
 
 		childContext.setNamespace("first");
 		childContext.setId(parentContext.getId() + ":first");
-
-		// context.setClassLoader(parent.getClassLoader());
-
-		// @see
-		// EndpointWebMvcAutoConfiguration#registerEmbeddedServletContainerFactory()
-		// registerEmbeddedServletContainerFactory(context, parent);
 
 		childContext.register(ChildCtxConfig.class);
 		childContext.refresh();
