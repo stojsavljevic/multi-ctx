@@ -1,4 +1,4 @@
-# Multi Context Application
+# Multi Context Application  [![Build Status](https://travis-ci.org/stojsavljevic/multi-ctx.svg?branch=master)](https://travis-ci.org/stojsavljevic/multi-ctx)
 
 This sample application(s) uses Spring Boot and handles multiple contexts inside one application. Samples handle contexts in different ways:
 
