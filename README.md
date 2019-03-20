@@ -3,7 +3,7 @@
 This sample application(s) uses Spring Boot and handles multiple contexts inside one application. Samples handle contexts in different ways:
 
 1. [Using SpringApplicationBuilder](https://github.com/stojsavljevic/multi-ctx/tree/master/multi-ctx-app-builder)
-2. [Using AnnotationConfigEmbeddedWebApplicationContext](https://github.com/stojsavljevic/multi-ctx/tree/master/multi-ctx-app-embed)
+2. [Using AnnotationConfigServletWebServerApplicationContext](https://github.com/stojsavljevic/multi-ctx/tree/master/multi-ctx-app-embed)
 3. [Using ServletRegistrationBean](https://github.com/stojsavljevic/multi-ctx/tree/master/multi-ctx-app-servlets)
 
 

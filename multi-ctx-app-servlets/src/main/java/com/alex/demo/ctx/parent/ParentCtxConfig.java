@@ -18,7 +18,7 @@ public class ParentCtxConfig {
 	}
 
 	@Bean
-	public ServletRegistrationBean createChildFirstCtx() {
+	public ServletRegistrationBean<DispatcherServlet> createChildFirstCtx() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
@@ -26,7 +26,7 @@ public class ParentCtxConfig {
 		applicationContext.setId("childFirst");
 
 		dispatcherServlet.setApplicationContext(applicationContext);
-		ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(dispatcherServlet, "/first/*");
+		ServletRegistrationBean<DispatcherServlet> servletRegistrationBean = new ServletRegistrationBean<>(dispatcherServlet, "/first/*");
 		servletRegistrationBean.setName("childFirst");
 		servletRegistrationBean.setLoadOnStartup(1);
 
@@ -34,7 +34,7 @@ public class ParentCtxConfig {
 	}
 
 	@Bean
-	public ServletRegistrationBean createChildSecondCtx() {
+	public ServletRegistrationBean<DispatcherServlet> createChildSecondCtx() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
@@ -42,7 +42,7 @@ public class ParentCtxConfig {
 		applicationContext.setId("childSecond");
 
 		dispatcherServlet.setApplicationContext(applicationContext);
-		ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(dispatcherServlet, "/second/*");
+		ServletRegistrationBean<DispatcherServlet> servletRegistrationBean = new ServletRegistrationBean<>(dispatcherServlet, "/second/*");
 		servletRegistrationBean.setName("childSecond");
 		servletRegistrationBean.setLoadOnStartup(2);
 

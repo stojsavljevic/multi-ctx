@@ -205,7 +205,7 @@ public class ChildCtxConfig {
 			if (this.adapters == null) {
 				this.adapters = extractAdapters();
 			}
-			return this.adapters.stream().filter((a) -> a.supports(handler)).findFirst();
+			return this.adapters.stream().filter(a -> a.supports(handler)).findFirst();
 		}
 
 		private List<HandlerAdapter> extractAdapters() {

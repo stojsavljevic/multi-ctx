@@ -1,4 +1,4 @@
-## Spring Boot Multi Context Application using AnnotationConfigEmbeddedWebApplicationContext
+## Spring Boot Multi Context Application using AnnotationConfigServletWebServerApplicationContext
 
 This sample application demonstrates creation of three contexts:
 
