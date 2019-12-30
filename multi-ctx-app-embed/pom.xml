@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.alex.demo.ctx</groupId>
 		<artifactId>multi-ctx-app</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.2.2</version>
 	</parent>
 
 	<artifactId>multi-ctx-app-embed</artifactId>
