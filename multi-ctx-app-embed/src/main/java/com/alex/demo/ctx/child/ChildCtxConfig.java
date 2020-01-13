@@ -17,12 +17,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletRegistrationBean;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -51,9 +49,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @SpringBootConfiguration
 @EnableWebMvc
 @ComponentScan("com.alex.demo.ctx.child")
-@Import({ PropertyPlaceholderAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
-		DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-		HttpMessageConvertersAutoConfiguration.class })
+@Import({ PropertyPlaceholderAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class, DispatcherServletAutoConfiguration.class })
 @PropertySource("classpath:context-child.properties")
 public class ChildCtxConfig {
 
@@ -156,8 +152,7 @@ public class ChildCtxConfig {
 		}
 
 		private List<HandlerMapping> extractMappings() {
-			List<HandlerMapping> list = new ArrayList<>();
-			list.addAll(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
+		    List<HandlerMapping> list = new ArrayList<>(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
 			list.remove(this);
 			AnnotationAwareOrderComparator.sort(list);
 			return list;
@@ -194,26 +189,22 @@ public class ChildCtxConfig {
 
 		@Override
 		public long getLastModified(HttpServletRequest request, Object handler) {
-			Optional<HandlerAdapter> adapter = getAdapter(handler);
-			if (adapter.isPresent()) {
-				return adapter.get().getLastModified(request, handler);
-			}
-			return 0;
+		    Optional<HandlerAdapter> adapter = getAdapter(handler);
+	        return adapter.map((handlerAdapter) -> handlerAdapter.getLastModified(request, handler)).orElse(0L);
 		}
 
 		private Optional<HandlerAdapter> getAdapter(Object handler) {
 			if (this.adapters == null) {
 				this.adapters = extractAdapters();
 			}
-			return this.adapters.stream().filter(a -> a.supports(handler)).findFirst();
+			return this.adapters.stream().filter((a) -> a.supports(handler)).findFirst();
 		}
 
 		private List<HandlerAdapter> extractAdapters() {
-			List<HandlerAdapter> list = new ArrayList<>();
-			list.addAll(this.beanFactory.getBeansOfType(HandlerAdapter.class).values());
-			list.remove(this);
-			AnnotationAwareOrderComparator.sort(list);
-			return list;
+		    List<HandlerAdapter> list = new ArrayList<>(this.beanFactory.getBeansOfType(HandlerAdapter.class).values());
+	        list.remove(this);
+	        AnnotationAwareOrderComparator.sort(list);
+	        return list;
 		}
 	}
 }
