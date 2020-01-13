@@ -23,7 +23,7 @@ public class ParentCtxConfig {
 	}
 
 	/**
-	 * @see org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextFactory#createManagementContext()
+	 * @see org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextFactory#createManagementContext(ApplicationContext, Class...)
 	 * @param parentContext
 	 * @return
 	 */
