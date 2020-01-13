@@ -1,0 +1,11 @@
+common:
+  property: common_prop
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always  
