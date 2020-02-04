@@ -1,6 +1,7 @@
 # Multi Context Application  [![Build Status](https://travis-ci.org/stojsavljevic/multi-ctx.svg?branch=master)](https://travis-ci.org/stojsavljevic/multi-ctx)
 
-This project is showcase of my blog post: [Spring Boot And Context Handling](https://ccbill.com/blog/spring-boot-and-context-handling)
+This project is showcase of my blog post: [Spring Boot And Context Handling](https://ccbill.com/blog/spring-boot-and-context-handling).
+
 Sample applications use Spring Boot and handle multiple contexts inside one application. Contexts are handled in different ways:
 
 1. [Using SpringApplicationBuilder](https://github.com/stojsavljevic/multi-ctx/tree/master/multi-ctx-app-builder)
