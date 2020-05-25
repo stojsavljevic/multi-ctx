@@ -33,6 +33,9 @@ import com.alex.demo.ctx.child.first.ChildFirstCtxConfig;
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class ChildFirstCtxControllerTests extends ParentCtxDefinition {
 
+    // prior to Spring Boot 2.3 it was "No message available" but now it's empty
+    private static final String ERROR_MESSAGE = "";
+    
 	@Autowired
 	TestRestTemplate restTemplate;
 
@@ -57,7 +60,7 @@ public class ChildFirstCtxControllerTests extends ParentCtxDefinition {
 		Map<String, String> response = restTemplate.getForObject("/dummy", Map.class);
 
 		assertEquals("Not Found", response.get("error"));
-		assertEquals("No message available", response.get("message"));
+		assertEquals(ERROR_MESSAGE, response.get("message"));
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -17,6 +17,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MultiCtxControllerTests {
+    
+    // prior to Spring Boot 2.3 it was "No message available" but now it's empty
+    private static final String ERROR_MESSAGE = "";
 
 	@Autowired
 	TestRestTemplate restTemplate;
@@ -42,7 +45,7 @@ public class MultiCtxControllerTests {
 		Map<String, String> response = restTemplate.getForObject("/dummy", Map.class);
 
 		assertEquals("Not Found", response.get("error"));
-		assertEquals("No message available", response.get("message"));
+		assertEquals(ERROR_MESSAGE, response.get("message"));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -75,7 +78,7 @@ public class MultiCtxControllerTests {
 		Map<String, String> response = restTemplate.getForObject("/first/dummy", Map.class);
 
 		assertEquals("Not Found", response.get("error"));
-		assertEquals("No message available", response.get("message"));
+		assertEquals(ERROR_MESSAGE, response.get("message"));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -108,7 +111,7 @@ public class MultiCtxControllerTests {
 		Map<String, String> response = restTemplate.getForObject("/second/dummy", Map.class);
 
 		assertEquals("Not Found", response.get("error"));
-		assertEquals("No message available", response.get("message"));
+		assertEquals(ERROR_MESSAGE, response.get("message"));
 	}
 	
 	@SuppressWarnings("unchecked")

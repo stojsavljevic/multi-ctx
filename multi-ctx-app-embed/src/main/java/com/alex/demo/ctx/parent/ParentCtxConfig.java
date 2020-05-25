@@ -1,7 +1,5 @@
 package com.alex.demo.ctx.parent;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -44,9 +42,9 @@ public class ParentCtxConfig {
 		return childContext;
 	}
 
-	boolean hasProfile(@NotNull String profileName) {
+	boolean hasProfile(String profileName) {
 		for (String profile : environment.getActiveProfiles()) {
-			if (profileName.equals(profile)) {
+			if (profile.equals(profileName)) {
 				return true;
 			}
 		}

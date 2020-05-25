@@ -21,6 +21,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class MultiCtxControllerTests {
 
+    // prior to Spring Boot 2.3 it was "No message available" but now it's empty
+    private static final String ERROR_MESSAGE = "";
+    
 	@Autowired
 	TestRestTemplate restTemplate;
 
@@ -43,7 +46,7 @@ public class MultiCtxControllerTests {
 		Map<String, String> response = restTemplate.getForObject("http://localhost:8082/child/dummy", Map.class);
 
 		assertEquals("Not Found", response.get("error"));
-		assertEquals("No message available", response.get("message"));
+		assertEquals(ERROR_MESSAGE, response.get("message"));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -65,7 +68,7 @@ public class MultiCtxControllerTests {
 		Map<String, String> response = restTemplate.getForObject("http://localhost:8080/parent/dummy", Map.class);
 
 		assertEquals("Not Found", response.get("error"));
-		assertEquals("No message available", response.get("message"));
+		assertEquals(ERROR_MESSAGE, response.get("message"));
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletRegistrationBean;
@@ -70,7 +71,7 @@ public class ChildCtxConfig {
 	@Bean
 	@ConditionalOnBean(ErrorAttributes.class)
 	public ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes) {
-		return new ManagementErrorEndpoint(errorAttributes);
+		return new ManagementErrorEndpoint(errorAttributes, new ErrorProperties());
 	}
 
 	@Profile("parent")

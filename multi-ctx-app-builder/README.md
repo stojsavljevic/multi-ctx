@@ -19,3 +19,10 @@ Child contexts are exposed on different ports - 8080 and 8081 respectively.
 Actuator is turned on in both web contexts. Example endpoints:
 * [http://localhost:8080/first/actuator/beans](http://localhost:8080/first/actuator/beans)
 * [http://localhost:8081/second/actuator/beans](http://localhost:8081/second/actuator/beans)
+
+
+In case you're getting exception like this on startup:
+```
+javax.management.InstanceAlreadyExistsException: org.springframework.boot:type=Admin,name=SpringApplication
+```
+either disable JMX in your IDE or uncomment `spring.application.admin.jmx-name` property in `context-first.properties` file.
