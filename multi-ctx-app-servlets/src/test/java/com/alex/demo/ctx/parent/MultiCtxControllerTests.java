@@ -1,22 +1,19 @@
 package com.alex.demo.ctx.parent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class MultiCtxControllerTests {
+class MultiCtxControllerTests {
     
     // prior to Spring Boot 2.3 it was "No message available" but now it's empty
     private static final String ERROR_MESSAGE = "";
@@ -26,100 +23,111 @@ public class MultiCtxControllerTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testParent() throws Exception {
+	void testParent() throws Exception {
 
 		Map<String, String> response = restTemplate.getForObject("/", Map.class);
 
-		assertEquals("parent_bean", response.get("parentBean"));
-		assertNull(response.get("childFirstBean"));
-		assertNull(response.get("childSecondBean"));
-		assertEquals("common_prop", response.get("parentProperty"));
-		assertEquals("null", response.get("childFirstProperty"));
-		assertEquals("null", response.get("childSecondProperty"));
+		Assertions.assertAll("Response from parent context is wrong!",
+				() -> Assertions.assertEquals("parent_bean", response.get("parentBean")),
+		        () -> Assertions.assertNull(response.get("childFirstBean")),
+		        () -> Assertions.assertNull(response.get("childSecondBean")),
+		        () -> Assertions.assertEquals("common_prop", response.get("parentProperty")),
+		        () -> Assertions.assertEquals("null", response.get("childFirstProperty")),
+		        () -> Assertions.assertEquals("null", response.get("childSecondProperty"))
+		);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testParentNotExists() throws Exception {
+	void testParentNotExists() throws Exception {
 
 		Map<String, String> response = restTemplate.getForObject("/dummy", Map.class);
 
-		assertEquals("Not Found", response.get("error"));
-		assertEquals(ERROR_MESSAGE, response.get("message"));
+		Assertions.assertAll("Error response for non-existing URL on parent context is wrong!",
+		        () -> Assertions.assertEquals("Not Found", response.get("error")),
+		        () -> Assertions.assertEquals(ERROR_MESSAGE, response.get("message"))
+		);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
-	public void testParentActuator() throws Exception {
-
-		Map<String, String> response = restTemplate.getForObject("/actuator/beans", Map.class);
-
-		assertNotNull(response.get("contexts"));
+	void testParentActuator() throws Exception {
+		
+		testActuator("/actuator/beans", "Parent actuator response is wrong!");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testChildFirst() throws Exception {
+	void testChildFirst() throws Exception {
 
 		Map<String, String> response = restTemplate.getForObject("/first/", Map.class);
-
-		assertEquals("parent_bean", response.get("parentBean"));
-		assertEquals("child_first_bean", response.get("childFirstBean"));
-		assertNull(response.get("childSecondBean"));
-		assertEquals("common_prop", response.get("parentProperty"));
-		assertEquals("prop_first", response.get("childFirstProperty"));
-		assertEquals("null", response.get("childSecondProperty"));
+		
+		Assertions.assertAll("Response from the first child context is wrong!",
+				() -> Assertions.assertEquals("parent_bean", response.get("parentBean")),
+		        () -> Assertions.assertEquals("child_first_bean", response.get("childFirstBean")),
+		        () -> Assertions.assertNull(response.get("childSecondBean")),
+		        () -> Assertions.assertEquals("common_prop", response.get("parentProperty")),
+		        () -> Assertions.assertEquals("prop_first", response.get("childFirstProperty")),
+		        () -> Assertions.assertEquals("null", response.get("childSecondProperty"))
+		);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testChildFirstNotExists() throws Exception {
+	void testChildFirstNotExists() throws Exception {
 
 		Map<String, String> response = restTemplate.getForObject("/first/dummy", Map.class);
-
-		assertEquals("Not Found", response.get("error"));
-		assertEquals(ERROR_MESSAGE, response.get("message"));
+		
+		Assertions.assertAll("Error response for non-existing URL on the first child context is wrong!",
+		        () -> Assertions.assertEquals("Not Found", response.get("error")),
+		        () -> Assertions.assertEquals(ERROR_MESSAGE, response.get("message"))
+		);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
-	public void testChildFirstActuator() throws Exception {
-
-		Map<String, String> response = restTemplate.getForObject("/first/actuator/beans", Map.class);
-
-		assertNotNull(response.get("contexts"));
+	void testChildFirstActuator() throws Exception {
+		
+		testActuator("/first/actuator/beans", "The first child actuator response is wrong!");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testChildSecond() throws Exception {
+	void testChildSecond() throws Exception {
 
 		Map<String, String> response = restTemplate.getForObject("/second/", Map.class);
-
-		assertEquals("parent_bean", response.get("parentBean"));
-		assertNull(response.get("childFirstBean"));
-		assertEquals("child_second_bean", response.get("childSecondBean"));
-		assertEquals("common_prop", response.get("parentProperty"));
-		assertEquals("null", response.get("childFirstProperty"));
-		assertEquals("prop_second", response.get("childSecondProperty"));
+		
+		Assertions.assertAll("Response from the second child context is wrong!",
+				() -> Assertions.assertEquals("parent_bean", response.get("parentBean")),
+		        () -> Assertions.assertNull(response.get("childFirstBean")),
+		        () -> Assertions.assertEquals("child_second_bean", response.get("childSecondBean")),
+		        () -> Assertions.assertEquals("common_prop", response.get("parentProperty")),
+		        () -> Assertions.assertEquals("null", response.get("childFirstProperty")),
+		        () -> Assertions.assertEquals("prop_second", response.get("childSecondProperty"))
+		);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testChildSecondNotExists() throws Exception {
+	void testChildSecondNotExists() throws Exception {
 
 		Map<String, String> response = restTemplate.getForObject("/second/dummy", Map.class);
+		
+		Assertions.assertAll("Error response for non-existing URL on the second child context is wrong!",
+		        () -> Assertions.assertEquals("Not Found", response.get("error")),
+		        () -> Assertions.assertEquals(ERROR_MESSAGE, response.get("message"))
+		);
+	}
+	
+	@Test
+	void testChildSecondActuator() throws Exception {
 
-		assertEquals("Not Found", response.get("error"));
-		assertEquals(ERROR_MESSAGE, response.get("message"));
+		testActuator("/second/actuator/beans", "The second child actuator response is wrong!");
 	}
 	
 	@SuppressWarnings("unchecked")
-	@Test
-	public void testChildSecondActuator() throws Exception {
+	void testActuator(String URL, String message) throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("/second/actuator/beans", Map.class);
+		Map<String, String> response = restTemplate.getForObject(URL, Map.class);
 
-		assertNotNull(response.get("contexts"));
+		Assertions.assertNotNull(response.get("contexts"), message);
 	}
 }
