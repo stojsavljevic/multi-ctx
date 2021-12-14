@@ -15,9 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MultiCtxControllerTests {
     
-    // prior to Spring Boot 2.3 it was "No message available" but now it's empty
-    private static final String ERROR_MESSAGE = "";
-
 	@Autowired
 	TestRestTemplate restTemplate;
 
@@ -41,11 +38,12 @@ class MultiCtxControllerTests {
 	@Test
 	void testParentNotExists() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("/dummy", Map.class);
+		Map<String, ?> response = restTemplate.getForObject("/dummy", Map.class);
 
 		Assertions.assertAll("Error response for non-existing URL on parent context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
-		        () -> Assertions.assertEquals(ERROR_MESSAGE, response.get("message"))
+		        () -> Assertions.assertEquals(new Integer(404), response.get("status")),
+		        () -> Assertions.assertEquals("/dummy", response.get("path"))
 		);
 	}
 	
@@ -75,11 +73,12 @@ class MultiCtxControllerTests {
 	@Test
 	void testChildFirstNotExists() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("/first/dummy", Map.class);
+		Map<String, ?> response = restTemplate.getForObject("/first/dummy", Map.class);
 		
 		Assertions.assertAll("Error response for non-existing URL on the first child context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
-		        () -> Assertions.assertEquals(ERROR_MESSAGE, response.get("message"))
+		        () -> Assertions.assertEquals(new Integer(404), response.get("status")),
+		        () -> Assertions.assertEquals("/first/dummy", response.get("path"))
 		);
 	}
 	
@@ -109,11 +108,12 @@ class MultiCtxControllerTests {
 	@Test
 	void testChildSecondNotExists() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("/second/dummy", Map.class);
+		Map<String, ?> response = restTemplate.getForObject("/second/dummy", Map.class);
 		
 		Assertions.assertAll("Error response for non-existing URL on the second child context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
-		        () -> Assertions.assertEquals(ERROR_MESSAGE, response.get("message"))
+		        () -> Assertions.assertEquals(new Integer(404), response.get("status")),
+		        () -> Assertions.assertEquals("/second/dummy", response.get("path"))
 		);
 	}
 	

@@ -2,6 +2,7 @@ package com.alex.demo.ctx.child;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,10 +40,12 @@ import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
 /**
  * @see org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration
@@ -103,6 +106,12 @@ public class ChildCtxConfig {
 	public CompositeHandlerAdapter compositeHandlerAdapter(ListableBeanFactory beanFactory) {
 		return new CompositeHandlerAdapter(beanFactory);
 	}
+	
+	@Profile("parent")
+	@Bean(name = DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
+	CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
+		return new CompositeHandlerExceptionResolver();
+	}
 
 	@Profile("parent")
 	@Bean
@@ -140,10 +149,7 @@ public class ChildCtxConfig {
 
 		@Override
 		public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
-			if (this.mappings == null) {
-				this.mappings = extractMappings();
-			}
-			for (HandlerMapping mapping : this.mappings) {
+			for (HandlerMapping mapping : getMappings()) {
 				HandlerExecutionChain handler = mapping.getHandler(request);
 				if (handler != null) {
 					return handler;
@@ -152,8 +158,25 @@ public class ChildCtxConfig {
 			return null;
 		}
 
+		@Override
+		public boolean usesPathPatterns() {
+			for (HandlerMapping mapping : getMappings()) {
+				if (mapping.usesPathPatterns()) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private List<HandlerMapping> getMappings() {
+			if (this.mappings == null) {
+				this.mappings = extractMappings();
+			}
+			return this.mappings;
+		}
+
 		private List<HandlerMapping> extractMappings() {
-		    List<HandlerMapping> list = new ArrayList<>(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
+			List<HandlerMapping> list = new ArrayList<>(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
 			list.remove(this);
 			AnnotationAwareOrderComparator.sort(list);
 			return list;
@@ -188,10 +211,15 @@ public class ChildCtxConfig {
 			return null;
 		}
 
+		/**
+	    * @deprecated
+	    */
+		@SuppressWarnings("deprecation")
 		@Override
+		@Deprecated
 		public long getLastModified(HttpServletRequest request, Object handler) {
-		    Optional<HandlerAdapter> adapter = getAdapter(handler);
-	        return adapter.map((handlerAdapter) -> handlerAdapter.getLastModified(request, handler)).orElse(0L);
+			Optional<HandlerAdapter> adapter = getAdapter(handler);
+			return adapter.map((handlerAdapter) -> handlerAdapter.getLastModified(request, handler)).orElse(0L);
 		}
 
 		private Optional<HandlerAdapter> getAdapter(Object handler) {
@@ -202,10 +230,43 @@ public class ChildCtxConfig {
 		}
 
 		private List<HandlerAdapter> extractAdapters() {
-		    List<HandlerAdapter> list = new ArrayList<>(this.beanFactory.getBeansOfType(HandlerAdapter.class).values());
-	        list.remove(this);
-	        AnnotationAwareOrderComparator.sort(list);
-	        return list;
+			List<HandlerAdapter> list = new ArrayList<>(this.beanFactory.getBeansOfType(HandlerAdapter.class).values());
+			list.remove(this);
+			AnnotationAwareOrderComparator.sort(list);
+			return list;
+		}
+	}
+	
+	/**
+	 * @see org.springframework.boot.actuate.autoconfigure.web.servlet.CompositeHandlerExceptionResolver
+	 */
+	class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
+
+		@Autowired
+		private ListableBeanFactory beanFactory;
+
+		private List<HandlerExceptionResolver> resolvers;
+
+		@Override
+		public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
+				Exception ex) {
+			if (this.resolvers == null) {
+				this.resolvers = extractResolvers();
+			}
+			return this.resolvers.stream().map((resolver) -> resolver.resolveException(request, response, handler, ex))
+					.filter(Objects::nonNull).findFirst().orElse(null);
+		}
+
+		private List<HandlerExceptionResolver> extractResolvers() {
+			List<HandlerExceptionResolver> list = new ArrayList<>(
+					this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
+			list.remove(this);
+			AnnotationAwareOrderComparator.sort(list);
+			if (list.isEmpty()) {
+				list.add(new DefaultErrorAttributes());
+				list.add(new DefaultHandlerExceptionResolver());
+			}
+			return list;
 		}
 	}
 }

@@ -18,9 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 class MultiCtxControllerTests {
 
-    // prior to Spring Boot 2.3 it was "No message available" but now it's empty
-    private static final String ERROR_MESSAGE = "";
-    
 	@Autowired
 	TestRestTemplate restTemplate;
 
@@ -42,11 +39,12 @@ class MultiCtxControllerTests {
 	@Test
 	void testChildNotExists() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("http://localhost:8082/child/dummy", Map.class);
+		Map<String, ?> response = restTemplate.getForObject("http://localhost:8082/child/dummy", Map.class);
 
 		Assertions.assertAll("Error response for non-existing URL on child context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
-		        () -> Assertions.assertEquals(ERROR_MESSAGE, response.get("message"))
+		        () -> Assertions.assertEquals(new Integer(404), response.get("status")),
+		        () -> Assertions.assertEquals("/child/dummy", response.get("path"))
 		);
 	}
 	
@@ -68,11 +66,12 @@ class MultiCtxControllerTests {
 	@Test
 	void testParentNotExists() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("http://localhost:8080/parent/dummy", Map.class);
+		Map<String, ?> response = restTemplate.getForObject("http://localhost:8080/parent/dummy", Map.class);
 
 		Assertions.assertAll("Error response for non-existing URL on parent context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
-		        () -> Assertions.assertEquals(ERROR_MESSAGE, response.get("message"))
+		        () -> Assertions.assertEquals(new Integer(404), response.get("status")),
+		        () -> Assertions.assertEquals("/parent/dummy", response.get("path"))
 		);
 	}
 	

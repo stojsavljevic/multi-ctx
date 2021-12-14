@@ -30,9 +30,6 @@ import com.alex.demo.ctx.child.first.ChildFirstCtxConfig;
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 class ChildFirstCtxControllerTests extends ParentCtxDefinition {
 
-    // prior to Spring Boot 2.3 it was "No message available" but now it's empty
-    private static final String ERROR_MESSAGE = "";
-    
 	@Autowired
 	TestRestTemplate restTemplate;
 
@@ -56,11 +53,12 @@ class ChildFirstCtxControllerTests extends ParentCtxDefinition {
 	@Test
 	void testChildFirstNotExists() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("/dummy", Map.class);
+		Map<String, ?> response = restTemplate.getForObject("/dummy", Map.class);
 		
 		Assertions.assertAll("Error response for non-existing URL on the first child context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
-		        () -> Assertions.assertEquals(ERROR_MESSAGE, response.get("message"))
+		        () -> Assertions.assertEquals(new Integer(404), response.get("status")),
+		        () -> Assertions.assertEquals("/first/dummy", response.get("path"))
 		);
 	}
 	
