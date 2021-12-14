@@ -13,4 +13,5 @@ orbs:
 workflows:
   maven-build-test:
     jobs:
-      - maven/test
+      - maven/test:
+          executor: j17
