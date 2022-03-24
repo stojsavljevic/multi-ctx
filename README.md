@@ -1,4 +1,4 @@
-# Multi Context Application
+# Multi Context Application ![build status](https://github.com/stojsavljevic/multi-ctx/actions/workflows/maven.yml/badge.svg)
 
 This project is showcase of my blog post: [Spring Boot And Context Handling](https://ccbill.com/blog/spring-boot-and-context-handling).
 
