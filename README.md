@@ -1,4 +1,4 @@
-# Multi Context Application  ![Build status](https://circleci.com/gh/stojsavljevic/multi-ctx.svg?style=svg)
+# Multi Context Application
 
 This project is showcase of my blog post: [Spring Boot And Context Handling](https://ccbill.com/blog/spring-boot-and-context-handling).
 
