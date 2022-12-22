@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.alex.demo.ctx</groupId>
 		<artifactId>multi-ctx-app</artifactId>
-		<version>1.2.7</version>
+		<version>1.3.0</version>
 	</parent>
 
 	<artifactId>multi-ctx-app-servlets</artifactId>
