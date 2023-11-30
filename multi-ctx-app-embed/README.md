@@ -18,8 +18,8 @@ public AnnotationConfigServletWebServerApplicationContext createChildContext(App
 ```
 
 It's exposed on port 8082 while actuator is exposed on port 8081.
-Most of the logic used for child context creation is taken from: `org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration`.
-So, child and actuator contexts are very similar.
+Most of the logic used for child context creation is taken from: `org.springframework.boot.actuate.autoconfigure.web.server.ChildManagementContextInitializer` and `org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory`.
+So, child and actuator contexts are very similar in case child context is child of parent context.
 
 This demo application provides two options:
 * child context is standalone (not child of parent web context). This is default.

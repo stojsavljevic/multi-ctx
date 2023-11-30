@@ -2,13 +2,11 @@ package com.alex.demo.ctx.child;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +44,9 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @see org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration
@@ -211,12 +212,9 @@ public class ChildCtxConfig {
 			return null;
 		}
 
-		/**
-	    * @deprecated
-	    */
-		@SuppressWarnings("deprecation")
 		@Override
-		@Deprecated
+		@Deprecated(since = "2.4.9", forRemoval = false)
+		@SuppressWarnings("deprecation")
 		public long getLastModified(HttpServletRequest request, Object handler) {
 			Optional<HandlerAdapter> adapter = getAdapter(handler);
 			return adapter.map((handlerAdapter) -> handlerAdapter.getLastModified(request, handler)).orElse(0L);
@@ -245,28 +243,43 @@ public class ChildCtxConfig {
 		@Autowired
 		private ListableBeanFactory beanFactory;
 
-		private List<HandlerExceptionResolver> resolvers;
+		private volatile List<HandlerExceptionResolver> resolvers;
 
 		@Override
 		public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
 				Exception ex) {
-			if (this.resolvers == null) {
-				this.resolvers = extractResolvers();
+			for (HandlerExceptionResolver resolver : getResolvers()) {
+				ModelAndView resolved = resolver.resolveException(request, response, handler, ex);
+				if (resolved != null) {
+					return resolved;
+				}
 			}
-			return this.resolvers.stream().map((resolver) -> resolver.resolveException(request, response, handler, ex))
-					.filter(Objects::nonNull).findFirst().orElse(null);
+			return null;
 		}
 
-		private List<HandlerExceptionResolver> extractResolvers() {
-			List<HandlerExceptionResolver> list = new ArrayList<>(
-					this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
-			list.remove(this);
-			AnnotationAwareOrderComparator.sort(list);
-			if (list.isEmpty()) {
-				list.add(new DefaultErrorAttributes());
-				list.add(new DefaultHandlerExceptionResolver());
+		private List<HandlerExceptionResolver> getResolvers() {
+			List<HandlerExceptionResolver> resolvers = this.resolvers;
+			if (resolvers == null) {
+				resolvers = new ArrayList<>();
+				collectResolverBeans(resolvers, this.beanFactory);
+				resolvers.remove(this);
+				AnnotationAwareOrderComparator.sort(resolvers);
+				if (resolvers.isEmpty()) {
+					resolvers.add(new DefaultErrorAttributes());
+					resolvers.add(new DefaultHandlerExceptionResolver());
+				}
+				this.resolvers = resolvers;
 			}
-			return list;
+			return resolvers;
+		}
+
+		private void collectResolverBeans(List<HandlerExceptionResolver> resolvers, BeanFactory beanFactory) {
+			if (beanFactory instanceof ListableBeanFactory listableBeanFactory) {
+				resolvers.addAll(listableBeanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
+			}
+			if (beanFactory instanceof HierarchicalBeanFactory hierarchicalBeanFactory) {
+				collectResolverBeans(resolvers, hierarchicalBeanFactory.getParentBeanFactory());
+			}
 		}
 	}
 }
