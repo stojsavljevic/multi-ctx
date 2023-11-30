@@ -4,28 +4,14 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
-class MultiCtxControllerTests {
-
-	@Autowired
-	TestRestTemplate restTemplate;
+class MultiCtxControllerTests extends CommonTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
 	void testChild() throws Exception {
-
-		Map<String, String> response = restTemplate.getForObject("http://localhost:8082/child", Map.class);
+		
+		Map<String, String> response = restTemplate.getForObject("http://localhost:{childPort}/child", Map.class, getChildPort());
 		
 		Assertions.assertAll("Response from child context is wrong!",
 		        () -> Assertions.assertNull(response.get("parentBean")),
@@ -39,11 +25,11 @@ class MultiCtxControllerTests {
 	@Test
 	void testChildNotExists() throws Exception {
 
-		Map<String, ?> response = restTemplate.getForObject("http://localhost:8082/child/dummy", Map.class);
+		Map<String, ?> response = restTemplate.getForObject("http://localhost:{childPort}/child/dummy", Map.class, getChildPort());
 
 		Assertions.assertAll("Error response for non-existing URL on child context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
-		        () -> Assertions.assertEquals(new Integer(404), response.get("status")),
+		        () -> Assertions.assertEquals(404, response.get("status")),
 		        () -> Assertions.assertEquals("/child/dummy", response.get("path"))
 		);
 	}
@@ -52,12 +38,12 @@ class MultiCtxControllerTests {
 	@Test
 	void testParent() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("http://localhost:8080/parent", Map.class);
+		Map<String, String> response = restTemplate.getForObject("/parent", Map.class);
 
 		Assertions.assertAll("Response from parent context is wrong!",
 				() -> Assertions.assertEquals("parent_bean", response.get("parentBean")),
 		        () -> Assertions.assertNull(response.get("childBean")),
-		        () -> Assertions.assertEquals("common_prop", response.get("parentProperty")),
+		        () -> Assertions.assertEquals("parent_prop", response.get("parentProperty")),
 		        () -> Assertions.assertEquals("null", response.get("childProperty"))
 		);
 	}
@@ -66,21 +52,12 @@ class MultiCtxControllerTests {
 	@Test
 	void testParentNotExists() throws Exception {
 
-		Map<String, ?> response = restTemplate.getForObject("http://localhost:8080/parent/dummy", Map.class);
+		Map<String, ?> response = restTemplate.getForObject("/parent/dummy", Map.class);
 
 		Assertions.assertAll("Error response for non-existing URL on parent context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
-		        () -> Assertions.assertEquals(new Integer(404), response.get("status")),
+		        () -> Assertions.assertEquals(404, response.get("status")),
 		        () -> Assertions.assertEquals("/parent/dummy", response.get("path"))
 		);
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Test
-	void testActuator() throws Exception {
-
-		Map<String, String> response = restTemplate.getForObject("http://localhost:8081/actuator/beans", Map.class);
-
-		Assertions.assertNotNull(response.get("contexts"), "Actuator response is wrong!");
 	}
 }

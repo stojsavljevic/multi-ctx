@@ -4,14 +4,11 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MultiCtxControllerTests {
     
@@ -42,7 +39,7 @@ class MultiCtxControllerTests {
 
 		Assertions.assertAll("Error response for non-existing URL on parent context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
-		        () -> Assertions.assertEquals(new Integer(404), response.get("status")),
+		        () -> Assertions.assertEquals(404, response.get("status")),
 		        () -> Assertions.assertEquals("/dummy", response.get("path"))
 		);
 	}
@@ -77,7 +74,7 @@ class MultiCtxControllerTests {
 		
 		Assertions.assertAll("Error response for non-existing URL on the first child context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
-		        () -> Assertions.assertEquals(new Integer(404), response.get("status")),
+		        () -> Assertions.assertEquals(404, response.get("status")),
 		        () -> Assertions.assertEquals("/first/dummy", response.get("path"))
 		);
 	}
@@ -112,7 +109,7 @@ class MultiCtxControllerTests {
 		
 		Assertions.assertAll("Error response for non-existing URL on the second child context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
-		        () -> Assertions.assertEquals(new Integer(404), response.get("status")),
+		        () -> Assertions.assertEquals(404, response.get("status")),
 		        () -> Assertions.assertEquals("/second/dummy", response.get("path"))
 		);
 	}

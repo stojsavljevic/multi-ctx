@@ -16,7 +16,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletRegistrationBean;
@@ -59,28 +58,28 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ChildCtxConfig {
 
 	@Bean(name = "child_bean")
-	public String getChildBean() {
+	String getChildBean() {
 		return "child_bean";
 	}
 	
-	@Value("${server.port:8888}")
-	int parentProperty;
+	@Value("${child.server.port}")
+	int childContextServerPort;
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
-	public DefaultErrorAttributes errorAttributes() {
+	DefaultErrorAttributes errorAttributes() {
 		return new DefaultErrorAttributes();
 	}
 
 	@Bean
 	@ConditionalOnBean(ErrorAttributes.class)
-	public ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes) {
-		return new ManagementErrorEndpoint(errorAttributes, new ErrorProperties());
+	ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes, ServerProperties serverProperties) {
+		return new ManagementErrorEndpoint(errorAttributes, serverProperties.getError());
 	}
 
 	@Profile("parent")
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-	public DispatcherServlet dispatcherServlet() {
+	DispatcherServlet dispatcherServlet() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 		// Ensure the parent configuration does not leak down to us
 		dispatcherServlet.setDetectAllHandlerAdapters(false);
@@ -92,19 +91,19 @@ public class ChildCtxConfig {
 
 	@Profile("parent")
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
-	public DispatcherServletRegistrationBean dispatcherServletRegistrationBean(DispatcherServlet dispatcherServlet) {
+	DispatcherServletRegistrationBean dispatcherServletRegistrationBean(DispatcherServlet dispatcherServlet) {
 		return new DispatcherServletRegistrationBean(dispatcherServlet, "/");
 	}
 
 	@Profile("parent")
 	@Bean(name = DispatcherServlet.HANDLER_MAPPING_BEAN_NAME)
-	public CompositeHandlerMapping compositeHandlerMapping() {
+	CompositeHandlerMapping compositeHandlerMapping() {
 		return new CompositeHandlerMapping();
 	}
 
 	@Profile("parent")
 	@Bean(name = DispatcherServlet.HANDLER_ADAPTER_BEAN_NAME)
-	public CompositeHandlerAdapter compositeHandlerAdapter(ListableBeanFactory beanFactory) {
+	CompositeHandlerAdapter compositeHandlerAdapter(ListableBeanFactory beanFactory) {
 		return new CompositeHandlerAdapter(beanFactory);
 	}
 	
@@ -117,12 +116,12 @@ public class ChildCtxConfig {
 	@Profile("parent")
 	@Bean
 	@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
-	public RequestContextFilter requestContextFilter() {
+	RequestContextFilter requestContextFilter() {
 		return new OrderedRequestContextFilter();
 	}
 
 	@Component
-	public class MyTomcatWebServerCustomizer implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+	class MyTomcatWebServerCustomizer implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -132,7 +131,7 @@ public class ChildCtxConfig {
 			ServerProperties server = BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory,
 					ServerProperties.class);
 
-			factory.setPort(parentProperty);
+			factory.setPort(childContextServerPort);
 			factory.addErrorPages(new ErrorPage(server.getError().getPath()));
 			factory.setServerHeader(server.getServerHeader());
 		}

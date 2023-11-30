@@ -1,13 +1,13 @@
 package com.alex.demo.ctx.parent;
 
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@SpringBootConfiguration
 public class ParentCtxConfig {
 
 	@Bean(name = "parent_bean")
-	public String getParentBean() {
+	String getParentBean() {
 		return "parent_bean";
 	}
 }

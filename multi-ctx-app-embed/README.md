@@ -8,10 +8,12 @@ This sample application demonstrates creation of three contexts:
 
 Child context is type `org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext`.
 It is created using Java configuration:
+
 ```
 @Bean
 public AnnotationConfigServletWebServerApplicationContext createChildContext(ApplicationContext parentContext) {
-  AnnotationConfigServletWebServerApplicationContext childContext = new AnnotationConfigServletWebServerApplicationContext();
+  AnnotationConfigServletWebServerApplicationContext childContext = (AnnotationConfigServletWebServerApplicationContext) ApplicationContextFactory.DEFAULT
+				.create(WebApplicationType.SERVLET);
   ...
   return childContext;
 }

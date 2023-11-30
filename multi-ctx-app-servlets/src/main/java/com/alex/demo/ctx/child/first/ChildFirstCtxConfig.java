@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 public class ChildFirstCtxConfig {
 
 	@Bean(name = "child_first_bean")
-	public String getChildFirstBean() {
+	String getChildFirstBean() {
 		return "child_first_bean";
 	}
 }

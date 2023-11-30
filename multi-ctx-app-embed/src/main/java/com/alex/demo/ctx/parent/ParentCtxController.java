@@ -20,7 +20,7 @@ public class ParentCtxController {
 	@Qualifier("child_bean")
 	String childBean;
 
-	@Value("${common.property:null}")
+	@Value("${custom.property.parent:null}")
 	String parentProperty;
 
 	@Value("${custom.property.child:null}")

@@ -9,7 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 public class ChildSecondCtxConfig {
 
 	@Bean(name = "child_second_bean")
-	public String getChildSecondBean() {
+	String getChildSecondBean() {
 		return "child_second_bean";
 	}
 }

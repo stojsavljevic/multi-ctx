@@ -1,10 +1,16 @@
 package com.alex.demo.ctx.parent;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationContextFactory;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 
 import com.alex.demo.ctx.child.ChildCtxConfig;
@@ -16,22 +22,34 @@ public class ParentCtxConfig {
 	Environment environment;
 
 	@Bean(name = "parent_bean")
-	public String getParentBean() {
+	String getParentBean() {
 		return "parent_bean";
 	}
 
 	/**
-	 * @see org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextFactory#createManagementContext(ApplicationContext, Class...)
+	 * @see org.springframework.boot.actuate.autoconfigure.web.server.ChildManagementContextInitializer#createManagementContext()
 	 * @param parentContext
 	 * @return
 	 */
 	@Bean
-	public AnnotationConfigServletWebServerApplicationContext createChildContext(ApplicationContext parentContext) {
-		AnnotationConfigServletWebServerApplicationContext childContext = new AnnotationConfigServletWebServerApplicationContext();
+	ConfigurableApplicationContext createManagementContext(ApplicationContext parentContext) {
+
+		AnnotationConfigServletWebServerApplicationContext childContext = (AnnotationConfigServletWebServerApplicationContext) ApplicationContextFactory.DEFAULT
+				.create(WebApplicationType.SERVLET);
+		ConfigurableEnvironment childEnvironment = ApplicationContextFactory.DEFAULT
+				.createEnvironment(WebApplicationType.SERVLET);
+		childContext.setEnvironment(childEnvironment);
+
+		if (parentContext.getEnvironment() instanceof ConfigurableEnvironment configurableEnvironment) {
+			childEnvironment.setConversionService((configurableEnvironment).getConversionService());
+		}
 
 		if (hasProfile("parent")) {
 			childContext.setParent(parentContext);
 		}
+
+		childContext.setServerNamespace("first");
+		childContext.setClassLoader(parentContext.getClassLoader());
 
 		childContext.setNamespace("first");
 		childContext.setId(parentContext.getId() + ":first");
@@ -43,11 +61,6 @@ public class ParentCtxConfig {
 	}
 
 	boolean hasProfile(String profileName) {
-		for (String profile : environment.getActiveProfiles()) {
-			if (profile.equals(profileName)) {
-				return true;
-			}
-		}
-		return false;
+		return Arrays.stream(environment.getActiveProfiles()).anyMatch(profile -> profile.equals(profileName));
 	}
 }

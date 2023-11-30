@@ -1,5 +1,6 @@
-common:
-  property: common_prop
+custom:
+  property:
+    parent: parent_prop
 
 management:
   server:

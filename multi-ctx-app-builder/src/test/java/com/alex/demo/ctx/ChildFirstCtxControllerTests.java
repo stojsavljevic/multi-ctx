@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +13,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.alex.demo.ctx.child.first.ChildFirstCtxConfig;
 
@@ -24,7 +22,6 @@ import com.alex.demo.ctx.child.first.ChildFirstCtxConfig;
  * class for parent context only because we need one bean from there.
  *
  */
-@ExtendWith(SpringExtension.class)
 @ContextHierarchy(@ContextConfiguration(name = "child", classes = ChildFirstCtxConfig.class))
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
@@ -57,7 +54,7 @@ class ChildFirstCtxControllerTests extends ParentCtxDefinition {
 		
 		Assertions.assertAll("Error response for non-existing URL on the first child context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
-		        () -> Assertions.assertEquals(new Integer(404), response.get("status")),
+		        () -> Assertions.assertEquals(404, response.get("status")),
 		        () -> Assertions.assertEquals("/first/dummy", response.get("path"))
 		);
 	}

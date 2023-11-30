@@ -13,12 +13,12 @@ import com.alex.demo.ctx.child.second.ChildSecondCtxConfig;
 public class ParentCtxConfig {
 
 	@Bean(name = "parent_bean")
-	public String getParentBean() {
+	String getParentBean() {
 		return "parent_bean";
 	}
 
 	@Bean
-	public ServletRegistrationBean<DispatcherServlet> createChildFirstCtx() {
+	ServletRegistrationBean<DispatcherServlet> createChildFirstCtx() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
@@ -34,7 +34,7 @@ public class ParentCtxConfig {
 	}
 
 	@Bean
-	public ServletRegistrationBean<DispatcherServlet> createChildSecondCtx() {
+	ServletRegistrationBean<DispatcherServlet> createChildSecondCtx() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
