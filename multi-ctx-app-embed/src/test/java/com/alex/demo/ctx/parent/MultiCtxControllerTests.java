@@ -11,7 +11,7 @@ class MultiCtxControllerTests extends CommonTest {
 	@Test
 	void testChild() throws Exception {
 		
-		Map<String, String> response = restTemplate.getForObject("http://localhost:{childPort}/child", Map.class, getChildPort());
+		Map<String, String> response = this.restTemplate.getForObject("http://localhost:{childPort}/child", Map.class, getChildPort());
 		
 		Assertions.assertAll("Response from child context is wrong!",
 		        () -> Assertions.assertNull(response.get("parentBean")),
@@ -25,7 +25,7 @@ class MultiCtxControllerTests extends CommonTest {
 	@Test
 	void testChildNotExists() throws Exception {
 
-		Map<String, ?> response = restTemplate.getForObject("http://localhost:{childPort}/child/dummy", Map.class, getChildPort());
+		Map<String, ?> response = this.restTemplate.getForObject("http://localhost:{childPort}/child/dummy", Map.class, getChildPort());
 
 		Assertions.assertAll("Error response for non-existing URL on child context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
@@ -38,7 +38,7 @@ class MultiCtxControllerTests extends CommonTest {
 	@Test
 	void testParent() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("/parent", Map.class);
+		Map<String, String> response = this.restTemplate.getForObject("/parent", Map.class);
 
 		Assertions.assertAll("Response from parent context is wrong!",
 				() -> Assertions.assertEquals("parent_bean", response.get("parentBean")),
@@ -52,7 +52,7 @@ class MultiCtxControllerTests extends CommonTest {
 	@Test
 	void testParentNotExists() throws Exception {
 
-		Map<String, ?> response = restTemplate.getForObject("/parent/dummy", Map.class);
+		Map<String, ?> response = this.restTemplate.getForObject("/parent/dummy", Map.class);
 
 		Assertions.assertAll("Error response for non-existing URL on parent context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),

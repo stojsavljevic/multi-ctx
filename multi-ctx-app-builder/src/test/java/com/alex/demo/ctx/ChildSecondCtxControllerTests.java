@@ -34,7 +34,7 @@ class ChildSecondCtxControllerTests extends ParentCtxDefinition {
 	@Test
 	void testChildSecond() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("/", Map.class);
+		Map<String, String> response = this.restTemplate.getForObject("/", Map.class);
 		
 		Assertions.assertAll("Response from the second child context is wrong!",
 		        () -> Assertions.assertEquals("parent_bean", response.get("parentBean")),
@@ -50,7 +50,7 @@ class ChildSecondCtxControllerTests extends ParentCtxDefinition {
 	@Test
 	void testChildSecondNotExists() throws Exception {
 
-		Map<String, ?> response = restTemplate.getForObject("/dummy", Map.class);
+		Map<String, ?> response = this.restTemplate.getForObject("/dummy", Map.class);
 		
 		Assertions.assertAll("Error response for non-existing URL on the second child context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
@@ -63,7 +63,7 @@ class ChildSecondCtxControllerTests extends ParentCtxDefinition {
 	@Test
 	void testChildSecondActuator() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("/actuator/beans", Map.class);
+		Map<String, String> response = this.restTemplate.getForObject("/actuator/beans", Map.class);
 
 		Assertions.assertNotNull(response.get("contexts"), "Actuator response is wrong!");
 	}

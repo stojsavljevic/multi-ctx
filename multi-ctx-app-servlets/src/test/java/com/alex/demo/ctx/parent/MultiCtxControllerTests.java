@@ -19,7 +19,7 @@ class MultiCtxControllerTests {
 	@Test
 	void testParent() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("/", Map.class);
+		Map<String, String> response = this.restTemplate.getForObject("/", Map.class);
 
 		Assertions.assertAll("Response from parent context is wrong!",
 				() -> Assertions.assertEquals("parent_bean", response.get("parentBean")),
@@ -35,7 +35,7 @@ class MultiCtxControllerTests {
 	@Test
 	void testParentNotExists() throws Exception {
 
-		Map<String, ?> response = restTemplate.getForObject("/dummy", Map.class);
+		Map<String, ?> response = this.restTemplate.getForObject("/dummy", Map.class);
 
 		Assertions.assertAll("Error response for non-existing URL on parent context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
@@ -54,7 +54,7 @@ class MultiCtxControllerTests {
 	@Test
 	void testChildFirst() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("/first/", Map.class);
+		Map<String, String> response = this.restTemplate.getForObject("/first/", Map.class);
 		
 		Assertions.assertAll("Response from the first child context is wrong!",
 				() -> Assertions.assertEquals("parent_bean", response.get("parentBean")),
@@ -70,7 +70,7 @@ class MultiCtxControllerTests {
 	@Test
 	void testChildFirstNotExists() throws Exception {
 
-		Map<String, ?> response = restTemplate.getForObject("/first/dummy", Map.class);
+		Map<String, ?> response = this.restTemplate.getForObject("/first/dummy", Map.class);
 		
 		Assertions.assertAll("Error response for non-existing URL on the first child context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
@@ -89,7 +89,7 @@ class MultiCtxControllerTests {
 	@Test
 	void testChildSecond() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("/second/", Map.class);
+		Map<String, String> response = this.restTemplate.getForObject("/second/", Map.class);
 		
 		Assertions.assertAll("Response from the second child context is wrong!",
 				() -> Assertions.assertEquals("parent_bean", response.get("parentBean")),
@@ -105,7 +105,7 @@ class MultiCtxControllerTests {
 	@Test
 	void testChildSecondNotExists() throws Exception {
 
-		Map<String, ?> response = restTemplate.getForObject("/second/dummy", Map.class);
+		Map<String, ?> response = this.restTemplate.getForObject("/second/dummy", Map.class);
 		
 		Assertions.assertAll("Error response for non-existing URL on the second child context is wrong!",
 		        () -> Assertions.assertEquals("Not Found", response.get("error")),
@@ -123,7 +123,7 @@ class MultiCtxControllerTests {
 	@SuppressWarnings("unchecked")
 	void testActuator(String URL, String message) throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject(URL, Map.class);
+		Map<String, String> response = this.restTemplate.getForObject(URL, Map.class);
 
 		Assertions.assertNotNull(response.get("contexts"), message);
 	}

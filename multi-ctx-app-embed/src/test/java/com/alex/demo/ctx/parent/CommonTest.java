@@ -30,14 +30,14 @@ abstract class CommonTest {
 	@Test
 	void testActuator() throws Exception {
 
-		Map<String, String> response = restTemplate.getForObject("http://localhost:{actuatorPort}/actuator/beans", Map.class, this.actuatorPort);
+		Map<String, String> response = this.restTemplate.getForObject("http://localhost:{actuatorPort}/actuator/beans", Map.class, this.actuatorPort);
 
 		Assertions.assertNotNull(response.get("contexts"), "Actuator response is wrong!");
 	}
 	
 	int getChildPort() {
 
-		AnnotationConfigServletWebServerApplicationContext childContext = applicationContext
+		AnnotationConfigServletWebServerApplicationContext childContext = this.applicationContext
 				.getBean(AnnotationConfigServletWebServerApplicationContext.class);
 		return childContext.getWebServer().getPort();
 	}
