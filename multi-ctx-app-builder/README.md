@@ -23,7 +23,9 @@ Actuator is turned on in both web contexts. Example endpoints:
 
 
 In case you're getting exception like this on startup:
+
 ```
 javax.management.InstanceAlreadyExistsException: org.springframework.boot:type=Admin,name=SpringApplication
+
 ```
 either disable JMX in your IDE or uncomment `spring.application.admin.jmx-name` property in `context-first.properties` file.
